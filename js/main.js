@@ -81,21 +81,21 @@ function openVideoModal(src) {
   if (!videoModal || !modalVideo) return;
   videoModal.classList.add('open');
   document.body.style.overflow = 'hidden';
-  modalVideo.innerHTML = '';
-  const source = document.createElement('source');
-  source.src = src;
-  source.type = 'video/mp4';
-  modalVideo.appendChild(source);
+  modalVideo.pause();
+  modalVideo.currentTime = 0;
+  modalVideo.removeAttribute('src');
+  modalVideo.src = src;
   modalVideo.load();
-  modalVideo.play().catch(() => {});
+  modalVideo.play().catch(error => {
+    console.warn('Modal video play blocked:', error);
+  });
 }
 
 function closeVideoModal() {
   if (!videoModal || !modalVideo) return;
   modalVideo.pause();
   modalVideo.currentTime = 0;
-  modalVideo.removeAttribute('src');
-  modalVideo.innerHTML = '';
+  modalVideo.src = '';
   modalVideo.load();
   videoModal.classList.remove('open');
   document.body.style.overflow = '';
