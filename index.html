@@ -5,38 +5,403 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coral Clicks | Capturing Emotions, Creating Timeless Memories</title>
 <meta name="description" content="Coral Clicks by Sohil Dhanani — Premium wedding, event, and portrait photography in Hyderabad. Book your story today.">
+
+<!-- Preconnect -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+
+<!-- Preload critical above-fold image (WebP preferred) -->
+<link rel="preload" as="image" href="images/hero/hero-bg.webp" fetchpriority="high">
+
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/animations.css">
+
 <style>
-  /* Lightbox */
-  .lightbox { cursor: zoom-out; }
-  .lightbox-inner { cursor: default; }
-  #lightboxImg { border-radius: 3px; }
-  /* Instagram embed responsive grid */
-  .insta-embed-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    max-width: 1200px;
-    margin: 2rem auto 0;
-  }
-  @media(max-width:900px){
-    .insta-embed-grid { grid-template-columns: 1fr 1fr; }
-  }
-  @media(max-width:600px){
-    .insta-embed-grid { grid-template-columns: 1fr; }
-  }
+/* ======================================================
+   OPTIMIZATION LAYER — Image & Video Best Practices
+   ====================================================== */
+
+/* 1. Native lazy images */
+img { loading: lazy; decoding: async; }
+
+/* 2. Smooth fade-in for lazy images */
+img.lazy { opacity: 0; transition: opacity 0.5s ease; }
+img.lazy.loaded { opacity: 1; }
+
+/* ---- Lightbox ---- */
+.lightbox { cursor: zoom-out; }
+.lightbox-inner { cursor: default; }
+#lightboxImg { border-radius: 3px; }
+
+/* ======================================================
+   MASONRY / BENTO PORTFOLIO GRID
+   ====================================================== */
+.portfolio-masonry {
+  columns: 3 280px;
+  column-gap: 14px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.pm-item {
+  break-inside: avoid;
+  margin-bottom: 14px;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background: var(--bg-dark-2);
+  display: block;
+}
+.pm-item img,
+.pm-item video {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
+  object-fit: cover;
+}
+.pm-item:hover img,
+.pm-item:hover video { transform: scale(1.04); }
+
+/* Video badge */
+.pm-video-badge {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #fff;
+  display: flex; align-items: center; gap: 5px;
+}
+.pm-video-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--coral);
+  animation: pulse-dot 1.5s infinite;
+}
+@keyframes pulse-dot {
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:0.5; transform:scale(0.8); }
+}
+
+/* Overlay on hover */
+.pm-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+}
+.pm-item:hover .pm-overlay { opacity: 1; }
+.pm-overlay-text { color: #fff; }
+.pm-overlay-cat {
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 4px;
+}
+.pm-overlay-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+/* Filter tabs */
+.portfolio-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-btn {
+  padding: 7px 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.filter-btn.active,
+.filter-btn:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+  background: rgba(var(--coral-rgb,210,100,70),0.08);
+}
+
+/* ======================================================
+   VIDEO REEL SECTION — Horizontal scroll + featured
+   ====================================================== */
+.video-reel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Featured video */
+.video-featured {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--border);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+}
+.video-featured-bar { position: absolute; top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--coral),var(--gold));z-index:2; }
+.video-featured video {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+.video-featured-caption {
+  padding: 22px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: var(--bg-dark-3);
+}
+.video-featured-caption .vfc-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 5px;
+}
+.video-featured-caption .vfc-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--text-primary);
+}
+.vfc-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px;
+  border: 1px solid var(--coral);
+  border-radius: 2px;
+  color: var(--coral);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 300;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.vfc-btn:hover { background: var(--coral); color: #fff; }
+
+/* Horizontal scroll reel strip */
+.video-strip {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--coral) transparent;
+}
+.video-strip::-webkit-scrollbar { height: 3px; }
+.video-strip::-webkit-scrollbar-thumb { background: var(--coral); border-radius: 2px; }
+.video-strip::-webkit-scrollbar-track { background: transparent; }
+
+.vs-card {
+  scroll-snap-align: start;
+  flex: 0 0 320px;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+@media(max-width:600px){ .vs-card { flex: 0 0 260px; } }
+
+.vs-card video,
+.vs-card .vs-poster {
+  width: 100%;
+  aspect-ratio: 9/16;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.vs-card:hover video,
+.vs-card:hover .vs-poster { transform: scale(1.03); }
+
+.vs-poster {
+  background-size: cover;
+  background-position: center;
+}
+.vs-play-btn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s;
+}
+.vs-play-circle {
+  width: 52px; height: 52px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s, background 0.3s;
+}
+.vs-card:hover .vs-play-circle {
+  transform: scale(1.12);
+  background: var(--coral);
+  border-color: var(--coral);
+}
+.vs-play-circle svg { fill: #fff; width: 18px; height: 18px; margin-left: 3px; }
+
+.vs-info {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 14px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+  color: #fff;
+}
+.vs-info-label {
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 3px;
+}
+.vs-info-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+
+/* ======================================================
+   VIDEO MODAL (for strip cards)
+   ====================================================== */
+#videoModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+#videoModal.open { display: flex; }
+#videoModal video {
+  max-width: min(90vw, 500px);
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.9);
+}
+.vm-close {
+  position: absolute;
+  top: 20px; right: 24px;
+  background: none; border: none;
+  color: #fff; font-size: 1.5rem;
+  cursor: pointer; opacity: 0.7;
+  transition: opacity 0.2s;
+  z-index: 1;
+}
+.vm-close:hover { opacity: 1; }
+
+/* ======================================================
+   INSTAGRAM GRID
+   ====================================================== */
+.insta-embed-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 1200px;
+  margin: 2rem auto 0;
+}
+@media(max-width:900px){ .insta-embed-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:600px){ .insta-embed-grid { grid-template-columns: 1fr; } }
+
+/* ======================================================
+   RESPONSIVE MASONRY
+   ====================================================== */
+@media(max-width:900px){
+  .portfolio-masonry { columns: 2 200px; }
+}
+@media(max-width:540px){
+  .portfolio-masonry { columns: 1; }
+}
+
+/* ======================================================
+   WHY-US GRID FILL
+   ====================================================== */
+.why-grid-filled {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
+  margin-top: 3rem;
+}
+.why-card {
+  background: var(--bg-dark-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 32px 28px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.why-card:hover {
+  border-color: var(--coral);
+  transform: translateY(-4px);
+}
+.why-icon {
+  font-size: 1.8rem;
+  margin-bottom: 14px;
+}
+.why-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.why-desc {
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ======================================================
+   MISC POLISH
+   ====================================================== */
+/* Skip blurry load on service card BG images — use <img> instead */
+.service-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 3px;
+  margin-bottom: 1.5rem;
+  display: block;
+}
 </style>
-<link rel="preload" as="image" href="images/hero/file_0000000087b071fa99e96b5c69c031b1.png">
+
 <script src="js/main.js" defer></script>
 <script src="js/portfolio.js" defer></script>
 <script src="js/form.js" defer></script>
 </head>
 <body>
 
+<!-- ===== NAV ===== -->
 <nav class="nav" id="nav">
   <a href="#home" class="nav-logo">
     <span class="nav-logo-name">Coral <em style="color:var(--coral)">Clicks</em></span>
@@ -45,6 +410,7 @@
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#videos">Reels</a></li>
     <li><a href="#services">Services</a></li>
     <li><a href="#testimonials">Reviews</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -61,18 +427,54 @@
 <div class="mobile-menu" id="mobileMenu">
   <a href="#about" class="mobile-link">About</a>
   <a href="#portfolio" class="mobile-link">Portfolio</a>
+  <a href="#videos" class="mobile-link">Reels</a>
   <a href="#services" class="mobile-link">Services</a>
   <a href="#testimonials" class="mobile-link">Reviews</a>
   <a href="#contact" class="mobile-link">Contact</a>
   <a href="https://wa.me/918247019293" target="_blank" style="color:var(--coral)">WhatsApp Us</a>
 </div>
 
+<!-- ===== HERO ===== -->
 <section class="hero" id="home">
   <div class="hero-slides">
-    <div class="hero-slide active" style="background-image:url('images/hero/IMG_20260205_175405%20copy%205.jpg');background-size:cover;background-position:center top;"></div>
-    <div class="hero-slide" style="background-image:url('images/weddings/DSC09574.jpg');background-size:cover;background-position:center top;"></div>
-    <div class="hero-slide" style="background-image:url('images/weddings/DSC09169.jpg');background-size:cover;background-position:center top;"></div>
-    <div class="hero-slide" style="background-image:url('images/birthdays/DSC01084.jpg');background-size:cover;background-position:center top;"></div>
+    <!--
+      OPTIMIZATION: Hero slides now use <img> with fetchpriority for above-fold,
+      and native loading="lazy" for the rest. background-image avoids browser
+      preload scanner — img tags are detected early by browsers.
+    -->
+    <div class="hero-slide active">
+      <img
+        src="images/hero/hero-bg.webp"
+        alt="Coral Clicks — Hero"
+        fetchpriority="high"
+        decoding="sync"
+        loading="eager"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+    </div>
+    <div class="hero-slide">
+      <img
+        src="images/weddings/wedding-22.webp"
+        alt="Wedding Photography"
+        loading="lazy"
+        decoding="async"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+    </div>
+    <div class="hero-slide">
+      <img
+        src="images/weddings/wedding-17.webp"
+        alt="Wedding Moments"
+        loading="lazy"
+        decoding="async"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+    </div>
+    <div class="hero-slide">
+      <img
+        src="images/birthdays/birthday-04.webp"
+        alt="Birthday Photography"
+        loading="lazy"
+        decoding="async"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+    </div>
   </div>
   <div class="hero-content">
     <p class="hero-eyebrow">✦ Premium Photography & Videography · Hyderabad</p>
@@ -95,35 +497,41 @@
   </div>
 </section>
 
+<!-- ===== MARQUEE ===== -->
 <div class="marquee-strip">
   <div class="marquee-inner">
-    <span>Wedding Photography</span>
-    <span>Event Coverage</span>
-    <span>Birthday Shoots</span>
-    <span>Model Photoshoots</span>
-    <span>Product Photography</span>
-    <span>Cinematic Videography</span>
-    <span>Pre-Wedding Sessions</span>
-    <span>Corporate Events</span>
-    <span>Wedding Photography</span>
-    <span>Event Coverage</span>
-    <span>Birthday Shoots</span>
-    <span>Model Photoshoots</span>
-    <span>Product Photography</span>
-    <span>Cinematic Videography</span>
-    <span>Pre-Wedding Sessions</span>
-    <span>Corporate Events</span>
+    <span>Wedding Photography</span><span>Event Coverage</span>
+    <span>Birthday Shoots</span><span>Model Photoshoots</span>
+    <span>Product Photography</span><span>Cinematic Videography</span>
+    <span>Pre-Wedding Sessions</span><span>Corporate Events</span>
+    <span>Wedding Photography</span><span>Event Coverage</span>
+    <span>Birthday Shoots</span><span>Model Photoshoots</span>
+    <span>Product Photography</span><span>Cinematic Videography</span>
+    <span>Pre-Wedding Sessions</span><span>Corporate Events</span>
   </div>
 </div>
 
+<!-- ===== ABOUT ===== -->
 <section class="about" id="about">
   <div class="about-grid">
     <div class="about-image-wrap reveal">
       <div class="about-accent-dot"></div>
       <div class="about-image-frame">
-        <img src="images/Screenshot_20260419_015315_Instagram.jpg" alt="Sohil Dhanani" style="width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 2;">
-        
-        </div>
+        <!--
+          OPTIMIZATION: Real <img> tag for the about portrait.
+          - loading="lazy" defers until near viewport
+          - decoding="async" unblocks main thread
+          - width/height prevent layout shift (CLS fix)
+        -->
+        <img
+          src="images/brand/brand-01.webp"
+          alt="Sohil Dhanani — Coral Clicks"
+          loading="lazy"
+          decoding="async"
+          width="600"
+          height="750"
+          style="width:100%;height:100%;object-fit:cover;position:relative;z-index:2;border-radius:inherit;">
+      </div>
       <div class="about-border-accent"></div>
       <div class="about-years">
         <div class="about-years-num">5+</div>
@@ -152,17 +560,38 @@
   </div>
 </section>
 
+<!-- ===== WHY US ===== -->
 <section class="why" id="why">
   <div style="max-width:1100px;margin:0 auto">
     <p class="section-label reveal">Why Us</p>
     <h2 class="section-title reveal reveal-delay-1">The Coral Clicks <em>Difference</em></h2>
     <div class="section-divider reveal reveal-delay-2"></div>
-    <div class="why-grid">
+    <div class="why-grid-filled">
+      <div class="why-card reveal">
+        <div class="why-icon">🎯</div>
+        <p class="why-title">Genuine Storytelling</p>
+        <p class="why-desc">We don't just click — we listen to your vision and craft images that feel authentically yours, not like a template.</p>
       </div>
+      <div class="why-card reveal reveal-delay-1">
+        <div class="why-icon">🎬</div>
+        <p class="why-title">Cinematic Videography</p>
+        <p class="why-desc">Professional-grade reels and highlight films with color grading, music sync and cinematic editing included.</p>
+      </div>
+      <div class="why-card reveal reveal-delay-2">
+        <div class="why-icon">⚡</div>
+        <p class="why-title">Fast Delivery</p>
+        <p class="why-desc">Edited sneak peeks within 48 hours. Full gallery delivered on time, every time — no endless waiting.</p>
+      </div>
+      <div class="why-card reveal reveal-delay-3">
+        <div class="why-icon">🤝</div>
+        <p class="why-title">Personal & Friendly</p>
+        <p class="why-desc">We put you at ease in front of the camera. Our clients always say they forgot a photographer was even there.</p>
+      </div>
+    </div>
   </div>
 </section>
 
-
+<!-- ===== PORTFOLIO ===== -->
 <section class="portfolio" id="portfolio">
   <div class="portfolio-header">
     <div>
@@ -173,104 +602,939 @@
     <div class="portfolio-filters reveal">
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="wedding">Weddings</button>
+      <button class="filter-btn" data-filter="pre-wedding">Pre-Wedding</button>
       <button class="filter-btn" data-filter="event">Events</button>
       <button class="filter-btn" data-filter="birthday">Birthdays</button>
       <button class="filter-btn" data-filter="product">Products</button>
       <button class="filter-btn" data-filter="model">Models</button>
     </div>
   </div>
-  <div class="portfolio-grid" id="portfolioGrid">
-    <div class="portfolio-item featured" data-cat="wedding">
-      <div class="portfolio-img" style="background-image:url('images/weddings/DSC09576.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay">
-        <div class="portfolio-info">
-          <p class="portfolio-cat">Wedding</p>
-          <p class="portfolio-name">Riya & Arjun — The Grand Walima</p>
-        </div>
+
+  <!--
+    MASONRY GRID — Images use native <img loading="lazy">
+    IntersectionObserver handles filter transitions via JS below.
+    No more background-image on portfolio divs — real img tags allow
+    browser preload scanner to discover them, improving LCP.
+  -->
+  <div class="portfolio-masonry" id="portfolioMasonry">
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-01.webp" data-label="Wedding" data-name="Wedding Ceremony">
+      <img src="images/weddings/wedding-01.webp" alt="Wedding Ceremony" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Ceremony</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-02.webp" data-label="Wedding" data-name="Bridal Portraits">
+      <img src="images/weddings/wedding-02.webp" alt="Bridal Portraits" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bridal Portraits</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="pre-wedding" tabindex="0"
+         data-src="images/weddings/wedding-03.webp" data-label="Pre-Wedding" data-name="Pre-Wedding Session">
+      <img src="images/weddings/wedding-03.webp" alt="Pre-Wedding Session" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Pre-Wedding</p><p class="pm-overlay-name">Pre-Wedding Session</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-04.webp" data-label="Wedding" data-name="Couple Moments">
+      <img src="images/weddings/wedding-04.webp" alt="Couple Moments" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Couple Moments</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-05.webp" data-label="Wedding" data-name="Golden Hour">
+      <img src="images/weddings/wedding-05.webp" alt="Golden Hour" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Golden Hour</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-06.webp" data-label="Wedding" data-name="Candid Emotions">
+      <img src="images/weddings/wedding-06.webp" alt="Candid Emotions" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Candid Emotions</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-07.webp" data-label="Wedding" data-name="Wedding Rituals">
+      <img src="images/weddings/wedding-07.webp" alt="Wedding Rituals" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Rituals</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-08.webp" data-label="Wedding" data-name="Sacred Vows">
+      <img src="images/weddings/wedding-08.webp" alt="Sacred Vows" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Sacred Vows</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-09.webp" data-label="Wedding" data-name="Reception Night">
+      <img src="images/weddings/wedding-09.webp" alt="Reception Night" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Reception Night</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-10.webp" data-label="Wedding" data-name="Bridal Details">
+      <img src="images/weddings/wedding-10.webp" alt="Bridal Details" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bridal Details</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-11.webp" data-label="Wedding" data-name="Groom Portrait">
+      <img src="images/weddings/wedding-11.webp" alt="Groom Portrait" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Groom Portrait</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-12.webp" data-label="Wedding" data-name="Family Moments">
+      <img src="images/weddings/wedding-12.webp" alt="Family Moments" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Family Moments</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-13.webp" data-label="Wedding" data-name="Haldi Ceremony">
+      <img src="images/weddings/wedding-13.webp" alt="Haldi Ceremony" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Haldi Ceremony</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-14.webp" data-label="Wedding" data-name="Mehendi Night">
+      <img src="images/weddings/wedding-14.webp" alt="Mehendi Night" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Mehendi Night</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-15.webp" data-label="Wedding" data-name="Wedding Candid">
+      <img src="images/weddings/wedding-15.webp" alt="Wedding Candid" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Candid</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="pre-wedding" tabindex="0"
+         data-src="images/weddings/wedding-16.webp" data-label="Pre-Wedding" data-name="Pre-Wedding Portraits">
+      <img src="images/weddings/wedding-16.webp" alt="Pre-Wedding Portraits" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Pre-Wedding</p><p class="pm-overlay-name">Pre-Wedding Portraits</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-17.webp" data-label="Wedding" data-name="Bride Getting Ready">
+      <img src="images/weddings/wedding-17.webp" alt="Bride Getting Ready" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bride Getting Ready</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-18.webp" data-label="Wedding" data-name="Couple Candid">
+      <img src="images/weddings/wedding-18.webp" alt="Couple Candid" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Couple Candid</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-19.webp" data-label="Wedding" data-name="Wedding Traditions">
+      <img src="images/weddings/wedding-19.webp" alt="Wedding Traditions" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Traditions</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-20.webp" data-label="Wedding" data-name="Romantic Moments">
+      <img src="images/weddings/wedding-20.webp" alt="Romantic Moments" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Romantic Moments</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-21.webp" data-label="Wedding" data-name="Wedding Decor">
+      <img src="images/weddings/wedding-21.webp" alt="Wedding Decor" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Decor</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-22.webp" data-label="Wedding" data-name="Bridal Look">
+      <img src="images/weddings/wedding-22.webp" alt="Bridal Look" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bridal Look</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-23.webp" data-label="Wedding" data-name="Couple Goals">
+      <img src="images/weddings/wedding-23.webp" alt="Couple Goals" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Couple Goals</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-24.webp" data-label="Wedding" data-name="Wedding Bliss">
+      <img src="images/weddings/wedding-24.webp" alt="Wedding Bliss" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Bliss</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="pre-wedding" tabindex="0"
+         data-src="images/weddings/wedding-25.webp" data-label="Pre-Wedding" data-name="Pre-Wedding Story">
+      <img src="images/weddings/wedding-25.webp" alt="Pre-Wedding Story" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Pre-Wedding</p><p class="pm-overlay-name">Pre-Wedding Story</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-26.webp" data-label="Wedding" data-name="Sangeet Night">
+      <img src="images/weddings/wedding-26.webp" alt="Sangeet Night" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Sangeet Night</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-27.webp" data-label="Wedding" data-name="Wedding Emotions">
+      <img src="images/weddings/wedding-27.webp" alt="Wedding Emotions" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Emotions</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-28.webp" data-label="Wedding" data-name="The First Dance">
+      <img src="images/weddings/wedding-28.webp" alt="The First Dance" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">The First Dance</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-29.webp" data-label="Wedding" data-name="Wedding Highlights">
+      <img src="images/weddings/wedding-29.webp" alt="Wedding Highlights" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Highlights</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-30.webp" data-label="Wedding" data-name="Candid Joy">
+      <img src="images/weddings/wedding-30.webp" alt="Candid Joy" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Candid Joy</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-31.webp" data-label="Wedding" data-name="Best Couple">
+      <img src="images/weddings/wedding-31.webp" alt="Best Couple" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Best Couple</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-32.webp" data-label="Wedding" data-name="Bridal Glow">
+      <img src="images/weddings/wedding-32.webp" alt="Bridal Glow" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bridal Glow</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-33.webp" data-label="Wedding" data-name="Love Story">
+      <img src="images/weddings/wedding-33.webp" alt="Love Story" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Love Story</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-34.webp" data-label="Wedding" data-name="Wedding Magic">
+      <img src="images/weddings/wedding-34.webp" alt="Wedding Magic" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Magic</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-35.webp" data-label="Wedding" data-name="Couple Portraits">
+      <img src="images/weddings/wedding-35.webp" alt="Couple Portraits" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Couple Portraits</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-36.webp" data-label="Wedding" data-name="Sacred Rituals">
+      <img src="images/weddings/wedding-36.webp" alt="Sacred Rituals" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Sacred Rituals</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-37.webp" data-label="Wedding" data-name="Wedding Memories">
+      <img src="images/weddings/wedding-37.webp" alt="Wedding Memories" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Memories</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-38.webp" data-label="Wedding" data-name="Romantic Candid">
+      <img src="images/weddings/wedding-38.webp" alt="Romantic Candid" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Romantic Candid</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-39.webp" data-label="Wedding" data-name="Groom Ready">
+      <img src="images/weddings/wedding-39.webp" alt="Groom Ready" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Groom Ready</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-40.webp" data-label="Wedding" data-name="Wedding Party">
+      <img src="images/weddings/wedding-40.webp" alt="Wedding Party" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Party</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-41.webp" data-label="Wedding" data-name="Bridal Portrait">
+      <img src="images/weddings/wedding-41.webp" alt="Bridal Portrait" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bridal Portrait</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-42.webp" data-label="Wedding" data-name="Ceremony Moments">
+      <img src="images/weddings/wedding-42.webp" alt="Ceremony Moments" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Ceremony Moments</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-43.webp" data-label="Wedding" data-name="Wedding Vows">
+      <img src="images/weddings/wedding-43.webp" alt="Wedding Vows" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Vows</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-44.webp" data-label="Wedding" data-name="Couple Session">
+      <img src="images/weddings/wedding-44.webp" alt="Couple Session" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Couple Session</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="pre-wedding" tabindex="0"
+         data-src="images/weddings/wedding-45.webp" data-label="Pre-Wedding" data-name="Pre-Wedding Shoot">
+      <img src="images/weddings/wedding-45.webp" alt="Pre-Wedding Shoot" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Pre-Wedding</p><p class="pm-overlay-name">Pre-Wedding Shoot</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-46.webp" data-label="Wedding" data-name="Golden Moments">
+      <img src="images/weddings/wedding-46.webp" alt="Golden Moments" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Golden Moments</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-47.webp" data-label="Wedding" data-name="Wedding Story">
+      <img src="images/weddings/wedding-47.webp" alt="Wedding Story" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Story</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-48.webp" data-label="Wedding" data-name="Bridal Candid">
+      <img src="images/weddings/wedding-48.webp" alt="Bridal Candid" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bridal Candid</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-49.webp" data-label="Wedding" data-name="Reception Glow">
+      <img src="images/weddings/wedding-49.webp" alt="Reception Glow" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Reception Glow</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-50.webp" data-label="Wedding" data-name="Wedding Day">
+      <img src="images/weddings/wedding-50.webp" alt="Wedding Day" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Day</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-51.webp" data-label="Wedding" data-name="Couple Love">
+      <img src="images/weddings/wedding-51.webp" alt="Couple Love" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Couple Love</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-52.webp" data-label="Wedding" data-name="Wedding Art">
+      <img src="images/weddings/wedding-52.webp" alt="Wedding Art" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Art</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-53.webp" data-label="Wedding" data-name="Bridal Session">
+      <img src="images/weddings/wedding-53.webp" alt="Bridal Session" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bridal Session</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-54.webp" data-label="Wedding" data-name="Wedding Frames">
+      <img src="images/weddings/wedding-54.webp" alt="Wedding Frames" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Frames</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-55.webp" data-label="Wedding" data-name="Candid Capture">
+      <img src="images/weddings/wedding-55.webp" alt="Candid Capture" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Candid Capture</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="pre-wedding" tabindex="0"
+         data-src="images/weddings/wedding-56.webp" data-label="Pre-Wedding" data-name="Pre-Wedding Magic">
+      <img src="images/weddings/wedding-56.webp" alt="Pre-Wedding Magic" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Pre-Wedding</p><p class="pm-overlay-name">Pre-Wedding Magic</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-57.webp" data-label="Wedding" data-name="Wedding Feels">
+      <img src="images/weddings/wedding-57.webp" alt="Wedding Feels" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Feels</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-58.webp" data-label="Wedding" data-name="Romantic Story">
+      <img src="images/weddings/wedding-58.webp" alt="Romantic Story" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Romantic Story</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-59.webp" data-label="Wedding" data-name="Bridal Grace">
+      <img src="images/weddings/wedding-59.webp" alt="Bridal Grace" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Bridal Grace</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-60.webp" data-label="Wedding" data-name="Wedding Forever">
+      <img src="images/weddings/wedding-60.webp" alt="Wedding Forever" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Forever</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-61.webp" data-label="Wedding" data-name="Studio Edit 1">
+      <img src="images/weddings/wedding-61.webp" alt="Studio Edit 1" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Edit 1</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-62.webp" data-label="Wedding" data-name="Studio Portrait">
+      <img src="images/weddings/wedding-62.webp" alt="Studio Portrait" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Portrait</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-63.webp" data-label="Wedding" data-name="Artistic Wedding">
+      <img src="images/weddings/wedding-63.webp" alt="Artistic Wedding" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Artistic Wedding</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-64.webp" data-label="Wedding" data-name="Studio Candid">
+      <img src="images/weddings/wedding-64.webp" alt="Studio Candid" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Candid</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-65.webp" data-label="Wedding" data-name="Studio Bridal">
+      <img src="images/weddings/wedding-65.webp" alt="Studio Bridal" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Bridal</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-66.webp" data-label="Wedding" data-name="Wedding Studio">
+      <img src="images/weddings/wedding-66.webp" alt="Wedding Studio" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Studio</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-67.webp" data-label="Wedding" data-name="Studio Edit 2">
+      <img src="images/weddings/wedding-67.webp" alt="Studio Edit 2" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Edit 2</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-68.webp" data-label="Wedding" data-name="Portrait Art">
+      <img src="images/weddings/wedding-68.webp" alt="Portrait Art" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Portrait Art</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-69.webp" data-label="Wedding" data-name="Studio Moments">
+      <img src="images/weddings/wedding-69.webp" alt="Studio Moments" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Moments</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-70.webp" data-label="Wedding" data-name="Wedding Vibes">
+      <img src="images/weddings/wedding-70.webp" alt="Wedding Vibes" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Vibes</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-71.webp" data-label="Wedding" data-name="Studio Session">
+      <img src="images/weddings/wedding-71.webp" alt="Studio Session" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Session</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-72.webp" data-label="Wedding" data-name="Portrait Edit">
+      <img src="images/weddings/wedding-72.webp" alt="Portrait Edit" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Portrait Edit</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-73.webp" data-label="Wedding" data-name="Studio Wedding">
+      <img src="images/weddings/wedding-73.webp" alt="Studio Wedding" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Wedding</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-74.webp" data-label="Wedding" data-name="Portrait Glow">
+      <img src="images/weddings/wedding-74.webp" alt="Portrait Glow" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Portrait Glow</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-75.webp" data-label="Wedding" data-name="Wedding Portrait">
+      <img src="images/weddings/wedding-75.webp" alt="Wedding Portrait" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Portrait</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-76.webp" data-label="Wedding" data-name="Studio Bliss">
+      <img src="images/weddings/wedding-76.webp" alt="Studio Bliss" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Studio Bliss</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-77.webp" data-label="Wedding" data-name="Wedding Ceremony 2">
+      <img src="images/weddings/wedding-77.webp" alt="Wedding Ceremony 2" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Ceremony 2</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-78.webp" data-label="Wedding" data-name="New Beginning">
+      <img src="images/weddings/wedding-78.webp" alt="New Beginning" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">New Beginning</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-79.webp" data-label="Wedding" data-name="Wedding Series">
+      <img src="images/weddings/wedding-79.webp" alt="Wedding Series" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Series</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-80.webp" data-label="Wedding" data-name="Couple Story">
+      <img src="images/weddings/wedding-80.webp" alt="Couple Story" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Couple Story</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-81.webp" data-label="Wedding" data-name="Wedding Journey">
+      <img src="images/weddings/wedding-81.webp" alt="Wedding Journey" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Journey</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-82.webp" data-label="Wedding" data-name="Romantic Series">
+      <img src="images/weddings/wedding-82.webp" alt="Romantic Series" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Romantic Series</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-83.webp" data-label="Wedding" data-name="Wedding Chapter">
+      <img src="images/weddings/wedding-83.webp" alt="Wedding Chapter" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Chapter</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-84.webp" data-label="Wedding" data-name="New Couple">
+      <img src="images/weddings/wedding-84.webp" alt="New Couple" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">New Couple</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-85.webp" data-label="Wedding" data-name="Couple Frames">
+      <img src="images/weddings/wedding-85.webp" alt="Couple Frames" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Couple Frames</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-86.webp" data-label="Wedding" data-name="Wedding Shots 2">
+      <img src="images/weddings/wedding-86.webp" alt="Wedding Shots 2" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Shots 2</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-87.webp" data-label="Wedding" data-name="Wedding Day 2">
+      <img src="images/weddings/wedding-87.webp" alt="Wedding Day 2" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Day 2</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-88.webp" data-label="Wedding" data-name="Reception Edit">
+      <img src="images/weddings/wedding-88.webp" alt="Reception Edit" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Reception Edit</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-89.webp" data-label="Wedding" data-name="Wedding Candids">
+      <img src="images/weddings/wedding-89.webp" alt="Wedding Candids" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Candids</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-90.webp" data-label="Wedding" data-name="Wedding Vibes 2">
+      <img src="images/weddings/wedding-90.webp" alt="Wedding Vibes 2" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Vibes 2</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-91.webp" data-label="Wedding" data-name="Wedding Joy">
+      <img src="images/weddings/wedding-91.webp" alt="Wedding Joy" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Joy</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="wedding" tabindex="0"
+         data-src="images/weddings/wedding-92.webp" data-label="Wedding" data-name="Wedding Aura">
+      <img src="images/weddings/wedding-92.webp" alt="Wedding Aura" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding</p><p class="pm-overlay-name">Wedding Aura</p></div></div>
+    </div>
+
+    <div class="pm-item pm-video" data-cat="wedding" tabindex="0" onclick="openVideoModal('videos/haldi-reel.mp4')">
+      <img src="images/weddings/haldi-poster.webp" alt="Haldi Reel" loading="lazy" decoding="async" style="width:100%;height:220px;object-fit:cover;">
+      <div class="pm-video-badge">Reel</div>
+      <div class="vs-play-btn" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div class="vs-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
-      <div class="portfolio-icon">⊕</div>
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding Film</p><p class="pm-overlay-name">Haldi Reel</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="event">
-      <div class="portfolio-img" style="background-image:url('images/events/590406805_18501036868072061_3149933243664829127_n.heic.jpg');background-size:cover;background-position:center;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Event</p><p class="portfolio-name">Corporate Gala Night</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item pm-video" data-cat="wedding" tabindex="0" onclick="openVideoModal('videos/reception-reel.mp4')">
+      <img src="images/weddings/reception-poster.webp" alt="Reception Reel" loading="lazy" decoding="async" style="width:100%;height:220px;object-fit:cover;">
+      <div class="pm-video-badge">Reel</div>
+      <div class="vs-play-btn" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div class="vs-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding Film</p><p class="pm-overlay-name">Reception Reel</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="model">
-      <div class="portfolio-img" style="background-image:url('images/models/651914435_18077940383377924_8858027459062642995_n.webp.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Model</p><p class="portfolio-name">Fashion Editorial</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item pm-video" data-cat="wedding" tabindex="0" onclick="openVideoModal('videos/wedding-teaser.mp4')">
+      <img src="images/weddings/wedding-teaser-poster.webp" alt="Wedding Teaser" loading="lazy" decoding="async" style="width:100%;height:220px;object-fit:cover;">
+      <div class="pm-video-badge">Reel</div>
+      <div class="vs-play-btn" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div class="vs-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding Film</p><p class="pm-overlay-name">Wedding Teaser</p></div></div>
     </div>
-    <div class="portfolio-item wide" data-cat="birthday">
-      <div class="portfolio-img" style="background-image:url('images/birthdays/DSC01084.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Birthday</p><p class="portfolio-name">Zara's First Birthday Magic</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item pm-video" data-cat="wedding" tabindex="0" onclick="openVideoModal('videos/sonali-teaser.mp4')">
+      <img src="images/weddings/sonali-poster.webp" alt="Sonali Teaser" loading="lazy" decoding="async" style="width:100%;height:220px;object-fit:cover;">
+      <div class="pm-video-badge">Reel</div>
+      <div class="vs-play-btn" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div class="vs-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Wedding Film</p><p class="pm-overlay-name">Sonali Teaser</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="product">
-      <div class="portfolio-img" style="background-image:url('images/products/File%20Broucher-14(2366519724467363).jpg');background-size:cover;background-position:center;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Product</p><p class="portfolio-name">Luxury Jewellery Campaign</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="event" tabindex="0"
+         data-src="images/events/590406805_18501036868072061_3149933243664829127_n.heic.jpg" data-label="Event" data-name="Corporate Gala Night">
+      <img src="images/events/590406805_18501036868072061_3149933243664829127_n.heic.jpg" alt="Corporate Gala Night" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Event</p><p class="pm-overlay-name">Corporate Gala Night</p></div></div>
     </div>
-    <div class="portfolio-item tall" data-cat="wedding">
-      <div class="portfolio-img" style="background-image:url('images/weddings/DSC00222.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Wedding</p><p class="portfolio-name">Pre-Wedding — Golden Hour</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="event" tabindex="0"
+         data-src="images/events/612998031_18501036850072061_4937388365256892915_n.heic.jpg" data-label="Event" data-name="Anniversary Celebration">
+      <img src="images/events/612998031_18501036850072061_4937388365256892915_n.heic.jpg" alt="Anniversary Celebration" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Event</p><p class="pm-overlay-name">Anniversary Celebration</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="event">
-      <div class="portfolio-img" style="background-image:url('images/events/612998031_18501036850072061_4937388365256892915_n.heic.jpg');background-size:cover;background-position:center;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Event</p><p class="portfolio-name">Anniversary Celebration</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="event" tabindex="0"
+         data-src="images/events/612484475_18501036841072061_6451466806735535805_n.heic.jpg" data-label="Event" data-name="Special Function">
+      <img src="images/events/612484475_18501036841072061_6451466806735535805_n.heic.jpg" alt="Special Function" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Event</p><p class="pm-overlay-name">Special Function</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="model">
-      <div class="portfolio-img" style="background-image:url('images/models/663224272_18576195631053448_2073857330573152776_n.webp.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Model</p><p class="portfolio-name">Portrait Series</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item pm-video" data-cat="event" tabindex="0" onclick="openVideoModal('videos/home-ceremony.mp4')">
+      <img src="images/events/event-poster.webp" alt="Home Opening Ceremony" loading="lazy" decoding="async" style="width:100%;height:220px;object-fit:cover;">
+      <div class="pm-video-badge">Event</div>
+      <div class="vs-play-btn" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div class="vs-play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Event</p><p class="pm-overlay-name">Home Opening Ceremony</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="product">
-      <div class="portfolio-img" style="background-image:url('images/products/File%20Broucher-19(2366519834051565).jpg');background-size:cover;background-position:center;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Product</p><p class="portfolio-name">Food & Beverage Shoot</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-01.webp" data-label="Birthday" data-name="Birthday Girl — Zara">
+      <img src="images/birthdays/birthday-01.webp" alt="Birthday Girl — Zara" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Birthday Girl — Zara</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="wedding">
-      <div class="portfolio-img" style="background-image:url('images/weddings/DSC09759.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Wedding</p><p class="portfolio-name">Bridal Portraits</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-02.webp" data-label="Birthday" data-name="Candid Joy">
+      <img src="images/birthdays/birthday-02.webp" alt="Candid Joy" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Candid Joy</p></div></div>
     </div>
-    <div class="portfolio-item wide" data-cat="wedding">
-      <div class="portfolio-img" style="background-image:url('images/weddings/DSC09805.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Wedding</p><p class="portfolio-name">Reception Ceremony</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-03.webp" data-label="Birthday" data-name="Cake Cutting Moment">
+      <img src="images/birthdays/birthday-03.webp" alt="Cake Cutting Moment" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Cake Cutting Moment</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="birthday">
-      <div class="portfolio-img" style="background-image:url('images/birthdays/DSC01086.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Birthday</p><p class="portfolio-name">Celebration Moments</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-04.webp" data-label="Birthday" data-name="Birthday Portraits">
+      <img src="images/birthdays/birthday-04.webp" alt="Birthday Portraits" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Birthday Portraits</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="event">
-      <div class="portfolio-img" style="background-image:url('images/events/612484475_18501036841072061_6451466806735535805_n.heic.jpg');background-size:cover;background-position:center;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Event</p><p class="portfolio-name">Special Function</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-05.webp" data-label="Birthday" data-name="Celebrations Unfold">
+      <img src="images/birthdays/birthday-05.webp" alt="Celebrations Unfold" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Celebrations Unfold</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="model">
-      <div class="portfolio-img" style="background-image:url('images/models/652732774_18098028115959935_2676702261357035944_n.webp.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Model</p><p class="portfolio-name">Studio Shoot</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-06.webp" data-label="Birthday" data-name="Balloon Magic">
+      <img src="images/birthdays/birthday-06.webp" alt="Balloon Magic" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Balloon Magic</p></div></div>
     </div>
-    <div class="portfolio-item" data-cat="product">
-      <div class="portfolio-img" style="background-image:url('images/products/File%20Broucher-1(2366519362753879).jpg');background-size:cover;background-position:center;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Product</p><p class="portfolio-name">Brand Campaign</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-07.webp" data-label="Birthday" data-name="Birthday Smiles">
+      <img src="images/birthdays/birthday-07.webp" alt="Birthday Smiles" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Birthday Smiles</p></div></div>
     </div>
-    <div class="portfolio-item tall" data-cat="wedding">
-      <div class="portfolio-img" style="background-image:url('images/weddings/DSC09578.jpg');background-size:cover;background-position:center top;"></div>
-      <div class="portfolio-overlay"><div class="portfolio-info"><p class="portfolio-cat">Wedding</p><p class="portfolio-name">Candid Emotion</p></div></div>
-      <div class="portfolio-icon">⊕</div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-08.webp" data-label="Birthday" data-name="Family Celebration">
+      <img src="images/birthdays/birthday-08.webp" alt="Family Celebration" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Family Celebration</p></div></div>
     </div>
-  </div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-09.webp" data-label="Birthday" data-name="First Birthday Glow">
+      <img src="images/birthdays/birthday-09.webp" alt="First Birthday Glow" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">First Birthday Glow</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="birthday" tabindex="0"
+         data-src="images/birthdays/birthday-10.webp" data-label="Birthday" data-name="Birthday Story">
+      <img src="images/birthdays/birthday-10.webp" alt="Birthday Story" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Birthday Story</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="model" tabindex="0"
+         data-src="images/models/651914435_18077940383377924_8858027459062642995_n.webp.jpg" data-label="Model" data-name="Fashion Editorial">
+      <img src="images/models/651914435_18077940383377924_8858027459062642995_n.webp.jpg" alt="Fashion Editorial" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Model</p><p class="pm-overlay-name">Fashion Editorial</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="model" tabindex="0"
+         data-src="images/models/663224272_18576195631053448_2073857330573152776_n.webp.jpg" data-label="Model" data-name="Portrait Series">
+      <img src="images/models/663224272_18576195631053448_2073857330573152776_n.webp.jpg" alt="Portrait Series" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Model</p><p class="pm-overlay-name">Portrait Series</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="model" tabindex="0"
+         data-src="images/models/652732774_18098028115959935_2676702261357035944_n.webp.jpg" data-label="Model" data-name="Studio Shoot">
+      <img src="images/models/652732774_18098028115959935_2676702261357035944_n.webp.jpg" alt="Studio Shoot" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Model</p><p class="pm-overlay-name">Studio Shoot</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-01.webp" data-label="Product" data-name="Brochure Design 1">
+      <img src="images/products/product-01.webp" alt="Brochure Design 1" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brochure Design 1</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-02.webp" data-label="Product" data-name="Brochure Design 2">
+      <img src="images/products/product-02.webp" alt="Brochure Design 2" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brochure Design 2</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-03.webp" data-label="Product" data-name="Product Showcase">
+      <img src="images/products/product-03.webp" alt="Product Showcase" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Showcase</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-04.webp" data-label="Product" data-name="Brand Campaign">
+      <img src="images/products/product-04.webp" alt="Brand Campaign" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brand Campaign</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-05.webp" data-label="Product" data-name="E-Commerce Shoot">
+      <img src="images/products/product-05.webp" alt="E-Commerce Shoot" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">E-Commerce Shoot</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-06.webp" data-label="Product" data-name="Product Detail">
+      <img src="images/products/product-06.webp" alt="Product Detail" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Detail</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-07.webp" data-label="Product" data-name="Brand Identity">
+      <img src="images/products/product-07.webp" alt="Brand Identity" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brand Identity</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-08.webp" data-label="Product" data-name="Jewellery Shoot">
+      <img src="images/products/product-08.webp" alt="Jewellery Shoot" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Jewellery Shoot</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-09.webp" data-label="Product" data-name="Product Lifestyle">
+      <img src="images/products/product-09.webp" alt="Product Lifestyle" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Lifestyle</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-10.webp" data-label="Product" data-name="Label Design">
+      <img src="images/products/product-10.webp" alt="Label Design" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Label Design</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-11.webp" data-label="Product" data-name="Commercial Shoot">
+      <img src="images/products/product-11.webp" alt="Commercial Shoot" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Commercial Shoot</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-12.webp" data-label="Product" data-name="Luxury Campaign">
+      <img src="images/products/product-12.webp" alt="Luxury Campaign" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Luxury Campaign</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-13.webp" data-label="Product" data-name="Brand Collateral">
+      <img src="images/products/product-13.webp" alt="Brand Collateral" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brand Collateral</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-14.webp" data-label="Product" data-name="Product Display">
+      <img src="images/products/product-14.webp" alt="Product Display" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Display</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-15.webp" data-label="Product" data-name="Food & Beverage">
+      <img src="images/products/product-15.webp" alt="Food & Beverage" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Food & Beverage</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-16.webp" data-label="Product" data-name="Product Portrait">
+      <img src="images/products/product-16.webp" alt="Product Portrait" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Portrait</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-17.webp" data-label="Product" data-name="Commercial Brand">
+      <img src="images/products/product-17.webp" alt="Commercial Brand" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Commercial Brand</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-18.webp" data-label="Product" data-name="Product Art">
+      <img src="images/products/product-18.webp" alt="Product Art" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Art</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-19.webp" data-label="Product" data-name="Brand Shoot">
+      <img src="images/products/product-19.webp" alt="Brand Shoot" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brand Shoot</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-20.webp" data-label="Product" data-name="Product Focus">
+      <img src="images/products/product-20.webp" alt="Product Focus" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Focus</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-21.webp" data-label="Product" data-name="Creative Campaign">
+      <img src="images/products/product-21.webp" alt="Creative Campaign" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Creative Campaign</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-22.webp" data-label="Product" data-name="Product Story">
+      <img src="images/products/product-22.webp" alt="Product Story" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Story</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-23.webp" data-label="Product" data-name="Brand Visual">
+      <img src="images/products/product-23.webp" alt="Brand Visual" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brand Visual</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-24.webp" data-label="Product" data-name="Product Elegance">
+      <img src="images/products/product-24.webp" alt="Product Elegance" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Elegance</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-25.webp" data-label="Product" data-name="Commercial Detail">
+      <img src="images/products/product-25.webp" alt="Commercial Detail" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Commercial Detail</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-26.webp" data-label="Product" data-name="Product Identity">
+      <img src="images/products/product-26.webp" alt="Product Identity" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Identity</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-27.webp" data-label="Product" data-name="Brand Story">
+      <img src="images/products/product-27.webp" alt="Brand Story" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brand Story</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-28.webp" data-label="Product" data-name="Product Highlight">
+      <img src="images/products/product-28.webp" alt="Product Highlight" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Highlight</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-29.webp" data-label="Product" data-name="Commercial Visual">
+      <img src="images/products/product-29.webp" alt="Commercial Visual" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Commercial Visual</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-30.webp" data-label="Product" data-name="Product Series">
+      <img src="images/products/product-30.webp" alt="Product Series" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Series</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-31.webp" data-label="Product" data-name="Brand Campaign 2">
+      <img src="images/products/product-31.webp" alt="Brand Campaign 2" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brand Campaign 2</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-32.webp" data-label="Product" data-name="Product Magic">
+      <img src="images/products/product-32.webp" alt="Product Magic" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Magic</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-33.webp" data-label="Product" data-name="Commercial Art">
+      <img src="images/products/product-33.webp" alt="Commercial Art" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Commercial Art</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-34.webp" data-label="Product" data-name="Product Series 2">
+      <img src="images/products/product-34.webp" alt="Product Series 2" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Series 2</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-35.webp" data-label="Product" data-name="Brand Highlight">
+      <img src="images/products/product-35.webp" alt="Brand Highlight" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Brand Highlight</p></div></div>
+    </div>
+
+    <div class="pm-item" data-cat="product" tabindex="0"
+         data-src="images/products/product-36.webp" data-label="Product" data-name="Product Final">
+      <img src="images/products/product-36.webp" alt="Product Final" loading="lazy" decoding="async">
+      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Product</p><p class="pm-overlay-name">Product Final</p></div></div>
+    </div>
+
+    </div><!-- /portfolio-masonry -->
+
   <div class="portfolio-cta reveal">
     <a href="https://www.instagram.com/coral_clickshyd" target="_blank" class="btn-outline" style="display:inline-block;color:var(--text-primary)">View Full Gallery on Instagram</a>
   </div>
 </section>
 
+<!-- ===== LIGHTBOX ===== -->
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" id="lightboxClose">✕</button>
   <button class="lightbox-prev" id="lightboxPrev">&#8249;</button>
@@ -282,66 +1546,153 @@
   <button class="lightbox-next" id="lightboxNext">&#8250;</button>
 </div>
 
-<script>
-// Lazy load background images
-document.addEventListener("DOMContentLoaded", function () {
-  const lazyElements = document.querySelectorAll(".lazy-bg");
-
-  const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const el = entry.target;
-        const bg = el.getAttribute("data-bg");
-        el.style.backgroundImage = `url('${bg}')`;
-        el.style.backgroundSize = "cover";
-        el.style.backgroundPosition = "center top";
-        obs.unobserve(el);
-      }
-    });
-  }, { threshold: 0.05 });
-
-  lazyElements.forEach(el => observer.observe(el));
-});
-</script>
-
+<!-- ===== VIDEOS SECTION ===== -->
 <section class="videos" id="videos" style="background:var(--bg-dark);padding:100px 5vw;">
   <div style="max-width:1200px;margin:0 auto;">
     <p class="section-label reveal" style="text-align:center;">Our Reels</p>
     <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">Cinematic <em>Highlights</em></h2>
     <div class="section-divider reveal reveal-delay-2" style="margin:0 auto 3rem;"></div>
 
-    <!-- Featured Full-Width Video -->
-    <div class="reveal" style="position:relative;border-radius:6px;overflow:hidden;background:#000;border:1px solid var(--border);box-shadow:0 40px 100px rgba(0,0,0,0.7);">
-      <!-- Decorative top bar -->
-      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--coral),var(--gold));z-index:2;"></div>
-      <video
-        id="featuredVideo"
-        controls
-        preload="metadata"
-        poster="images/weddings/DSC09574.jpg"
-        style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;"
-      >
-        <source src="videos/AQPwewGY41osucxmFTJtfEI8nEHrWbgslfkufpQXLsaioX4w196hhjXW7l37V-OryrY_D_RDrnF9zF8pZdpjtnAZh0Gcf7P-y2Jsldo.mp4" type="video/mp4">
-      </video>
-      <!-- Caption bar -->
-      <div style="padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:var(--bg-dark-3);">
-        <div>
-          <p style="font-size:0.6rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--coral);font-weight:300;margin-bottom:6px;">Cinematic Reel</p>
-          <p style="font-family:var(--font-display);font-size:1.5rem;font-weight:300;color:var(--text-primary);line-height:1.2;">Best Moments</p>
-        </div>
-        <button onclick="var v=document.getElementById('featuredVideo');if(v.requestFullscreen)v.requestFullscreen();else if(v.webkitRequestFullscreen)v.webkitRequestFullscreen();v.play();"
-          style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;border:1px solid var(--coral);border-radius:2px;color:var(--coral);font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;font-family:var(--font-body);font-weight:300;background:transparent;cursor:pointer;transition:all 0.3s;"
-          onmouseover="this.style.background='var(--coral)';this.style.color='#fff';"
-          onmouseout="this.style.background='transparent';this.style.color='var(--coral)';">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
-          Watch Fullscreen
-        </button>
-      </div>
-    </div>
+    <div class="video-reel-wrap">
 
+      <!-- Featured full-width video -->
+      <div class="video-featured reveal">
+        <div class="video-featured-bar"></div>
+        <!--
+          OPTIMIZATION:
+          - preload="none" — do NOT preload video data on page load (saves 10–50 MB of bandwidth)
+          - poster= a lightweight WebP/JPG for the frame before play
+          - autoplay/muted only if you add it for silent bg loops; left off here
+          - Browser will load only metadata until user hits play
+        -->
+        <video
+          id="featuredVideo"
+          controls
+          preload="none"
+          poster="images/hero/hero-reel-poster.webp"
+          style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;"
+        >
+          <source src="videos/hero-reel.mp4" type="video/mp4">
+          Your browser does not support video.
+        </video>
+        <div class="video-featured-caption">
+          <div>
+            <p class="vfc-label">Cinematic Reel</p>
+            <p class="vfc-title">Best Moments</p>
+          </div>
+          <button class="vfc-btn" onclick="var v=document.getElementById('featuredVideo');if(v.requestFullscreen)v.requestFullscreen();else if(v.webkitRequestFullscreen)v.webkitRequestFullscreen();v.play();">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            Watch Fullscreen
+          </button>
+        </div>
+      </div>
+
+      <!-- Horizontal scroll strip — wedding reels (9:16 portrait aspect) -->
+      <div>
+        <p style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:14px;">Scroll to explore →</p>
+        <div class="video-strip">
+
+          <!-- Each card uses a poster image + video loaded on click to save bandwidth -->
+          <div class="vs-card" onclick="openVideoModal('videos/haldi-reel.mp4')">
+            <div class="vs-poster" style="background-image:url('images/weddings/haldi-poster.webp');aspect-ratio:9/16;"></div>
+            <div class="vs-play-btn">
+              <div class="vs-play-circle">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <div class="vs-info">
+              <p class="vs-info-label">Wedding</p>
+              <p class="vs-info-title">Haldi Reel</p>
+            </div>
+            <div class="pm-video-badge">Reel</div>
+          </div>
+
+          <div class="vs-card" onclick="openVideoModal('videos/reception-reel.mp4')">
+            <div class="vs-poster" style="background-image:url('images/weddings/reception-poster.webp');aspect-ratio:9/16;"></div>
+            <div class="vs-play-btn">
+              <div class="vs-play-circle">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <div class="vs-info">
+              <p class="vs-info-label">Wedding</p>
+              <p class="vs-info-title">Reception Reel</p>
+            </div>
+            <div class="pm-video-badge">Reel</div>
+          </div>
+
+          <div class="vs-card" onclick="openVideoModal('videos/wedding-teaser.mp4')">
+            <div class="vs-poster" style="background-image:url('images/weddings/wedding-teaser-poster.webp');aspect-ratio:9/16;"></div>
+            <div class="vs-play-btn">
+              <div class="vs-play-circle">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <div class="vs-info">
+              <p class="vs-info-label">Wedding</p>
+              <p class="vs-info-title">Wedding Teaser</p>
+            </div>
+            <div class="pm-video-badge">Teaser</div>
+          </div>
+
+          <div class="vs-card" onclick="openVideoModal('videos/sonali-teaser.mp4')">
+            <div class="vs-poster" style="background-image:url('images/weddings/sonali-poster.webp');aspect-ratio:9/16;"></div>
+            <div class="vs-play-btn">
+              <div class="vs-play-circle">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <div class="vs-info">
+              <p class="vs-info-label">Wedding</p>
+              <p class="vs-info-title">Sonali Teaser</p>
+            </div>
+            <div class="pm-video-badge">Teaser</div>
+          </div>
+
+          <div class="vs-card" onclick="openVideoModal('videos/birthday-video.mp4')">
+            <div class="vs-poster" style="background-image:url('images/birthdays/birthday-poster.webp');aspect-ratio:9/16;"></div>
+            <div class="vs-play-btn">
+              <div class="vs-play-circle">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <div class="vs-info">
+              <p class="vs-info-label">Birthday</p>
+              <p class="vs-info-title">Birthday Film</p>
+            </div>
+            <div class="pm-video-badge">Film</div>
+          </div>
+
+          <div class="vs-card" onclick="openVideoModal('videos/home-ceremony.mp4')">
+            <div class="vs-poster" style="background-image:url('images/events/event-poster.webp');aspect-ratio:9/16;"></div>
+            <div class="vs-play-btn">
+              <div class="vs-play-circle">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <div class="vs-info">
+              <p class="vs-info-label">Event</p>
+              <p class="vs-info-title">Home Opening Ceremony</p>
+            </div>
+            <div class="pm-video-badge">Event</div>
+          </div>
+
+        </div><!-- /video-strip -->
+      </div>
+
+    </div><!-- /video-reel-wrap -->
   </div>
 </section>
 
+<!-- Video Modal (opens on strip card click) -->
+<div id="videoModal">
+  <button class="vm-close" onclick="closeVideoModal()">✕</button>
+  <video id="modalVideo" controls playsinline style="max-width:min(90vw,500px);max-height:90vh;border-radius:8px;box-shadow:0 40px 120px rgba(0,0,0,0.9);">
+    Your browser does not support video.
+  </video>
+</div>
+
+<!-- ===== INSTAGRAM ===== -->
 <section class="instagram" id="instagram" style="background:var(--bg-dark-2);padding:100px 5vw;">
   <div class="instagram-header">
     <p class="section-label reveal">Stay Connected</p>
@@ -353,13 +1704,6 @@ document.addEventListener("DOMContentLoaded", function () {
   <div class="insta-embed-grid">
     <div style="border-radius:4px;overflow:hidden;height:560px;">
       <blockquote class="instagram-media"
-        data-instgrm-permalink="https://www.instagram.com/p/DOvZPttk0Xu/"
-        data-instgrm-version="14"
-        style="background:#fff;border:0;border-radius:4px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:0;min-width:100%;padding:0;width:100%;">
-      </blockquote>
-    </div>
-    <div style="border-radius:4px;overflow:hidden;height:560px;">
-      <blockquote class="instagram-media"
         data-instgrm-permalink="https://www.instagram.com/p/DNSbXt8zhmO/"
         data-instgrm-version="14"
         style="background:#fff;border:0;border-radius:4px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:0;min-width:100%;padding:0;width:100%;">
@@ -367,21 +1711,28 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
     <div style="border-radius:4px;overflow:hidden;height:560px;">
       <blockquote class="instagram-media"
-        data-instgrm-permalink="https://www.instagram.com/reel/DDUxrWehDhI/"
+        data-instgrm-permalink="https://www.instagram.com/p/CQ0xUL5pGWu/"
         data-instgrm-version="14"
         style="background:#fff;border:0;border-radius:4px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:0;min-width:100%;padding:0;width:100%;">
       </blockquote>
     </div>
     <div style="border-radius:4px;overflow:hidden;height:560px;">
       <blockquote class="instagram-media"
-        data-instgrm-permalink="https://www.instagram.com/p/CiBS9dmhZSi/"
+        data-instgrm-permalink="https://www.instagram.com/p/DHN-u7uJRdW/"
         data-instgrm-version="14"
         style="background:#fff;border:0;border-radius:4px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:0;min-width:100%;padding:0;width:100%;">
       </blockquote>
     </div>
     <div style="border-radius:4px;overflow:hidden;height:560px;">
       <blockquote class="instagram-media"
-        data-instgrm-permalink="https://www.instagram.com/p/CMHAEsmpt4L/"
+        data-instgrm-permalink="https://www.instagram.com/reel/CzazQSKJLEa/"
+        data-instgrm-version="14"
+        style="background:#fff;border:0;border-radius:4px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:0;min-width:100%;padding:0;width:100%;">
+      </blockquote>
+    </div>
+    <div style="border-radius:4px;overflow:hidden;height:560px;">
+      <blockquote class="instagram-media"
+        data-instgrm-permalink="https://www.instagram.com/p/CLkMMDxJ7P0/"
         data-instgrm-version="14"
         style="background:#fff;border:0;border-radius:4px;box-shadow:0 0 1px 0 rgba(0,0,0,.5),0 1px 10px 0 rgba(0,0,0,.15);margin:0;min-width:100%;padding:0;width:100%;">
       </blockquote>
@@ -394,13 +1745,30 @@ document.addEventListener("DOMContentLoaded", function () {
       </blockquote>
     </div>
   </div>
-
-  <script async src="//www.instagram.com/embed.js"></script>
+  <!-- Load Instagram embed script lazily, only when the section scrolls into view -->
+  <script>
+  (function(){
+    var loaded = false;
+    var section = document.getElementById('instagram');
+    var io = new IntersectionObserver(function(entries){
+      if(entries[0].isIntersecting && !loaded){
+        loaded = true;
+        var s = document.createElement('script');
+        s.src = 'https://www.instagram.com/embed.js';
+        s.async = true;
+        document.body.appendChild(s);
+        io.disconnect();
+      }
+    }, {rootMargin:'200px'});
+    io.observe(section);
+  })();
+  </script>
 
   <div class="portfolio-cta reveal" style="margin-top:2.5rem;">
     <a href="https://www.instagram.com/coral_clickshyd" target="_blank" class="btn-outline" style="display:inline-block;color:var(--text-primary);">Follow on Instagram</a>
   </div>
 </section>
+
 <!-- ===== SERVICES ===== -->
 <section class="services" id="services">
   <div style="max-width:1200px;margin:0 auto;">
@@ -408,48 +1776,56 @@ document.addEventListener("DOMContentLoaded", function () {
     <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">Our <em>Services</em></h2>
     <div class="section-divider reveal reveal-delay-2" style="margin:0 auto 3rem;"></div>
     <div class="services-grid">
+
+      <!-- OPTIMIZATION: service cards now use <img> not background-image divs -->
       <div class="service-card reveal">
-        <div style="background-image:url('images/weddings/DSC09576.jpg'); background-size:cover; background-position:center top; width:100%; aspect-ratio:4/3; border-radius:3px; margin-bottom:1.5rem; overflow:hidden;"></div>
+        <img class="service-img" src="images/weddings/wedding-23.webp" alt="Wedding photography" loading="lazy" decoding="async">
         <div class="service-icon">💍</div>
         <h3 class="service-title">Wedding Photography</h3>
         <p class="service-desc">Cinematic documentation of every emotion — from the first look to the last dance. Full-day coverage, candid moments & posed portraits.</p>
         <a href="#contact" class="service-link">Book Now →</a>
       </div>
+
       <div class="service-card reveal reveal-delay-1">
-        <div style="background-image:url('images/events/590406805_18501036868072061_3149933243664829127_n.heic.jpg'); background-size:cover; background-position:center; width:100%; aspect-ratio:4/3; border-radius:3px; margin-bottom:1.5rem; overflow:hidden;"></div>
+        <img class="service-img" src="images/events/590406805_18501036868072061_3149933243664829127_n.heic.jpg" alt="Event coverage" loading="lazy" decoding="async">
         <div class="service-icon">🎉</div>
         <h3 class="service-title">Events & Functions</h3>
         <p class="service-desc">Corporate galas, sangeets, mehendi, housewarming ceremonies — comprehensive event coverage with a creative eye.</p>
         <a href="#contact" class="service-link">Book Now →</a>
       </div>
+
       <div class="service-card reveal reveal-delay-2">
-        <div style="background-image:url('images/birthdays/DSC01085.jpg'); background-size:cover; background-position:center top; width:100%; aspect-ratio:4/3; border-radius:3px; margin-bottom:1.5rem; overflow:hidden;"></div>
+        <img class="service-img" src="images/birthdays/birthday-05.webp" alt="Birthday shoot" loading="lazy" decoding="async">
         <div class="service-icon">🎂</div>
         <h3 class="service-title">Birthday Shoots</h3>
         <p class="service-desc">Milestone birthdays, first year celebrations, sweet 16 & beyond — joyful, vibrant coverage of every precious moment.</p>
         <a href="#contact" class="service-link">Book Now →</a>
       </div>
+
       <div class="service-card reveal reveal-delay-3">
-        <div style="background-image:url('images/models/651914435_18077940383377924_8858027459062642995_n.webp.jpg'); background-size:cover; background-position:center top; width:100%; aspect-ratio:4/3; border-radius:3px; margin-bottom:1.5rem; overflow:hidden;"></div>
+        <img class="service-img" src="images/models/651914435_18077940383377924_8858027459062642995_n.webp.jpg" alt="Fashion model shoot" loading="lazy" decoding="async">
         <div class="service-icon">👗</div>
         <h3 class="service-title">Fashion & Model Shoots</h3>
         <p class="service-desc">Editorial portraits, portfolio shoots, fashion campaigns — high-fashion visuals crafted to elevate your brand or portfolio.</p>
         <a href="#contact" class="service-link">Book Now →</a>
       </div>
+
       <div class="service-card reveal">
-        <div style="background-image:url('images/products/File%20Broucher-7(2366519538153207).jpg'); background-size:cover; background-position:center; width:100%; aspect-ratio:4/3; border-radius:3px; margin-bottom:1.5rem; overflow:hidden;"></div>
+        <img class="service-img" src="images/products/product-07.webp" alt="Product photography" loading="lazy" decoding="async">
         <div class="service-icon">📦</div>
         <h3 class="service-title">Product Photography</h3>
         <p class="service-desc">Studio-quality product shoots for e-commerce, brochures and brand collaterals. 36+ product images per session available.</p>
         <a href="#contact" class="service-link">Book Now →</a>
       </div>
+
       <div class="service-card reveal reveal-delay-1">
-        <div style="background-image:url('images/weddings/DSC09169.jpg'); background-size:cover; background-position:center; width:100%; aspect-ratio:4/3; border-radius:3px; margin-bottom:1.5rem; overflow:hidden;"></div>
+        <img class="service-img" src="images/weddings/wedding-17.webp" alt="Cinematic videography" loading="lazy" decoding="async">
         <div class="service-icon">🎬</div>
         <h3 class="service-title">Cinematic Videography</h3>
         <p class="service-desc">Wedding reels, event highlight films, product videos & Instagram reels — full cinematic production with professional editing.</p>
         <a href="#contact" class="service-link">Book Now →</a>
       </div>
+
     </div>
   </div>
 </section>
@@ -626,6 +2002,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <li><a href="#home">Home</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#videos">Reels</a></li>
         <li><a href="#services">Services</a></li>
         <li><a href="#testimonials">Reviews</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -660,10 +2037,12 @@ document.addEventListener("DOMContentLoaded", function () {
   </div>
 </footer>
 
-<!-- ===== FLOATING WHATSAPP ===== -->
+<!-- Floating WhatsApp -->
 <a href="https://wa.me/918247019293?text=Hi%20Sohil!%20I%27d%20like%20to%20enquire%20about%20a%20booking." target="_blank" class="float-wa" aria-label="WhatsApp">
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
+
+<!-- portfolio.js, main.js, and form.js handle all interactivity -->
 
 </body>
 </html>
