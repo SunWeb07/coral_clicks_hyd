@@ -140,6 +140,16 @@ img.lazy.loaded { opacity: 1; }
   background: rgba(var(--coral-rgb,210,100,70),0.08);
 }
 
+.portfolio-show-more {
+  display: flex;
+  justify-content: center;
+  margin: 32px 0 16px;
+}
+
+.portfolio-show-more button {
+  min-width: 220px;
+}
+
 /* ======================================================
    VIDEO REEL SECTION — Horizontal scroll + featured
    ====================================================== */
@@ -524,7 +534,7 @@ img.lazy.loaded { opacity: 1; }
           - width/height prevent layout shift (CLS fix)
         -->
         <img
-          src="images/brand/brand-01.webp"
+          src="images/Screenshot_20260419_015315_Instagram.jpg"
           alt="Sohil Dhanani — Coral Clicks"
           loading="lazy"
           decoding="async"
@@ -1234,12 +1244,6 @@ img.lazy.loaded { opacity: 1; }
     </div>
 
     <div class="pm-item" data-cat="birthday" tabindex="0"
-         data-src="images/birthdays/birthday-01.webp" data-label="Birthday" data-name="Birthday Girl — Zara">
-      <img src="images/birthdays/birthday-01.webp" alt="Birthday Girl — Zara" loading="lazy" decoding="async">
-      <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Birthday Girl — Zara</p></div></div>
-    </div>
-
-    <div class="pm-item" data-cat="birthday" tabindex="0"
          data-src="images/birthdays/birthday-02.webp" data-label="Birthday" data-name="Candid Joy">
       <img src="images/birthdays/birthday-02.webp" alt="Candid Joy" loading="lazy" decoding="async">
       <div class="pm-overlay"><div class="pm-overlay-text"><p class="pm-overlay-cat">Birthday</p><p class="pm-overlay-name">Candid Joy</p></div></div>
@@ -1529,6 +1533,10 @@ img.lazy.loaded { opacity: 1; }
 
     </div><!-- /portfolio-masonry -->
 
+  <div class="portfolio-show-more reveal">
+    <button id="portfolioShowMore" class="btn-outline">Show more images</button>
+  </div>
+
   <div class="portfolio-cta reveal">
     <a href="https://www.instagram.com/coral_clickshyd" target="_blank" class="btn-outline" style="display:inline-block;color:var(--text-primary)">View Full Gallery on Instagram</a>
   </div>
@@ -1568,11 +1576,12 @@ img.lazy.loaded { opacity: 1; }
         <video
           id="featuredVideo"
           controls
-          preload="none"
+          preload="metadata"
+          src="videos/km-highlight.mp4"
           poster="images/hero/hero-reel-poster.webp"
           style="width:100%;display:block;aspect-ratio:16/9;object-fit:cover;"
         >
-          <source src="videos/hero-reel.mp4" type="video/mp4">
+          <source src="videos/km-highlight.mp4" type="video/mp4">
           Your browser does not support video.
         </video>
         <div class="video-featured-caption">
@@ -1647,20 +1656,6 @@ img.lazy.loaded { opacity: 1; }
               <p class="vs-info-title">Sonali Teaser</p>
             </div>
             <div class="pm-video-badge">Teaser</div>
-          </div>
-
-          <div class="vs-card" onclick="openVideoModal('videos/birthday-video.mp4')">
-            <div class="vs-poster" style="background-image:url('images/birthdays/birthday-poster.webp');aspect-ratio:9/16;"></div>
-            <div class="vs-play-btn">
-              <div class="vs-play-circle">
-                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-            <div class="vs-info">
-              <p class="vs-info-label">Birthday</p>
-              <p class="vs-info-title">Birthday Film</p>
-            </div>
-            <div class="pm-video-badge">Film</div>
           </div>
 
           <div class="vs-card" onclick="openVideoModal('videos/home-ceremony.mp4')">

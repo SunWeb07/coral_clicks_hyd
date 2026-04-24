@@ -1,23 +1,68 @@
 
 // ============================
-// PORTFOLIO FILTER
+// PORTFOLIO FILTER + SHOW MORE
 // ============================
 const filterBtns = document.querySelectorAll('.filter-btn');
-const portfolioItems = document.querySelectorAll('.portfolio-item');
+const portfolioItems = document.querySelectorAll('.pm-item');
+const showMoreBtn = document.getElementById('portfolioShowMore');
+const initialVisibleCount = 12;
+let portfolioExpanded = false;
+
+function getActiveFilter() {
+  const activeButton = document.querySelector('.filter-btn.active');
+  return activeButton ? activeButton.dataset.filter : 'all';
+}
+
+function updatePortfolioVisibility() {
+  const filter = getActiveFilter();
+  let visibleCount = 0;
+  let hiddenCount = 0;
+
+  portfolioItems.forEach(item => {
+    const matchesFilter = filter === 'all' || item.dataset.cat === filter;
+    const shouldShow = matchesFilter && (portfolioExpanded || visibleCount < initialVisibleCount);
+
+    if (matchesFilter && !shouldShow) {
+      hiddenCount += 1;
+    }
+
+    item.hidden = !shouldShow;
+    if (shouldShow) {
+      item.style.opacity = '1';
+      item.style.pointerEvents = 'all';
+      item.style.transform = 'scale(1)';
+      item.style.transition = 'all 0.4s ease';
+      visibleCount += 1;
+    }
+  });
+
+  if (showMoreBtn) {
+    if (hiddenCount > 0) {
+      showMoreBtn.style.display = 'inline-flex';
+      showMoreBtn.textContent = portfolioExpanded ? 'Show fewer images' : 'Show more images';
+    } else {
+      showMoreBtn.style.display = 'none';
+    }
+  }
+}
+
 filterBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     filterBtns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    const filter = btn.dataset.filter;
-    portfolioItems.forEach(item => {
-      const show = filter === 'all' || item.dataset.cat === filter;
-      item.style.opacity = show ? '1' : '0.2';
-      item.style.pointerEvents = show ? 'all' : 'none';
-      item.style.transform = show ? 'scale(1)' : 'scale(0.95)';
-      item.style.transition = 'all 0.4s ease';
-    });
+    portfolioExpanded = false;
+    updatePortfolioVisibility();
   });
 });
+
+if (showMoreBtn) {
+  showMoreBtn.addEventListener('click', () => {
+    portfolioExpanded = !portfolioExpanded;
+    updatePortfolioVisibility();
+  });
+}
+
+updatePortfolioVisibility();
 
 // ============================
 // LIGHTBOX
@@ -28,20 +73,14 @@ const lbImg = document.getElementById('lightboxImg');
 const lbCap = document.getElementById('lightboxCaption');
 let currentLightboxIdx = 0;
 
-// Build items array from portfolio background-image style + caption text
+// Build items array from portfolio image source + caption text
 const items = Array.from(portfolioItems).map(item => {
-  const imgEl = item.querySelector('.portfolio-img');
+  const imgEl = item.querySelector('img');
   let src = '';
   if (imgEl) {
-    // Try data-bg first, fall back to parsing inline background-image style
-    src = imgEl.getAttribute('data-bg') || '';
-    if (!src) {
-      const bg = imgEl.style.backgroundImage || '';
-      const match = bg.match(/url\(['"]?([^'"]+)['"]?\)/);
-      if (match) src = match[1];
-    }
+    src = imgEl.src || imgEl.getAttribute('src') || '';
   }
-  const caption = (item.querySelector('.portfolio-name') || item.querySelector('.portfolio-cat') || {textContent: ''}).textContent;
+  const caption = (item.querySelector('.portfolio-name') || item.querySelector('.portfolio-cat') || item.querySelector('.pm-overlay-name') || item.dataset.name || {textContent: ''}).textContent;
   return { src, caption };
 });
 

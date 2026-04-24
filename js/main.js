@@ -70,3 +70,44 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 revealEls.forEach(el => observer.observe(el));
+
+// ============================
+// VIDEO MODAL
+// ============================
+const videoModal = document.getElementById('videoModal');
+const modalVideo = document.getElementById('modalVideo');
+
+function openVideoModal(src) {
+  if (!videoModal || !modalVideo) return;
+  videoModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  modalVideo.innerHTML = '';
+  const source = document.createElement('source');
+  source.src = src;
+  source.type = 'video/mp4';
+  modalVideo.appendChild(source);
+  modalVideo.load();
+  modalVideo.play().catch(() => {});
+}
+
+function closeVideoModal() {
+  if (!videoModal || !modalVideo) return;
+  modalVideo.pause();
+  modalVideo.currentTime = 0;
+  modalVideo.removeAttribute('src');
+  modalVideo.innerHTML = '';
+  modalVideo.load();
+  videoModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+if (videoModal) {
+  videoModal.addEventListener('click', (e) => {
+    if (e.target === videoModal) closeVideoModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && videoModal.classList.contains('open')) {
+      closeVideoModal();
+    }
+  });
+}
