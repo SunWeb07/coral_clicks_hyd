@@ -18,26 +18,34 @@ function updatePortfolioVisibility() {
   let visibleCount = 0;
   let hiddenCount = 0;
 
+  let matchedCount = 0;
+
   portfolioItems.forEach(item => {
     const matchesFilter = filter === 'all' || item.dataset.cat === filter;
+    if (matchesFilter) {
+      matchedCount += 1;
+    }
     const shouldShow = matchesFilter && (portfolioExpanded || visibleCount < initialVisibleCount);
 
     if (matchesFilter && !shouldShow) {
       hiddenCount += 1;
     }
 
-    item.hidden = !shouldShow;
     if (shouldShow) {
+      item.style.display = '';
       item.style.opacity = '1';
       item.style.pointerEvents = 'all';
       item.style.transform = 'scale(1)';
       item.style.transition = 'all 0.4s ease';
       visibleCount += 1;
+    } else {
+      item.style.display = 'none';
     }
   });
 
   if (showMoreBtn) {
-    if (hiddenCount > 0) {
+    const shouldShowButton = matchedCount > initialVisibleCount || portfolioExpanded;
+    if (shouldShowButton) {
       showMoreBtn.style.display = 'inline-flex';
       showMoreBtn.textContent = portfolioExpanded ? 'Show fewer images' : 'Show more images';
     } else {
