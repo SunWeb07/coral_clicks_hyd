@@ -1,4 +1,3 @@
-
 // ============================
 // NAV SCROLL
 // ============================
@@ -83,12 +82,11 @@ function openVideoModal(src) {
   document.body.style.overflow = 'hidden';
   modalVideo.pause();
   modalVideo.currentTime = 0;
-  modalVideo.removeAttribute('src');
+  // Set src and load — do NOT call .play() here;
+  // browsers block autoplay without a direct user gesture on the video element itself.
+  // The <video controls> UI lets the user press play naturally.
   modalVideo.src = src;
   modalVideo.load();
-  modalVideo.play().catch(error => {
-    console.warn('Modal video play blocked:', error);
-  });
 }
 
 function closeVideoModal() {
